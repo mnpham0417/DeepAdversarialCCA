@@ -140,14 +140,28 @@ for epoch in range(opt.n_epochs):
         decoded1 = [model_vae_real.decoder(z) for z in fake_encoded]
         decoded2 = [model_vae_fake.decoder(z) for z in real_encoded]
 
+        
+
         decoded1 = torch.stack(decoded1)
         decoded2 = torch.stack(decoded2)
+        # decoded1 = decoded1[-1,:,:]
+
+        print(decoded1)
+        print(decoded2)
+
+        # print(decoded1.shape, decoded2.shape)
 
         view1, view2 = model_deepCCA(decoded1, decoded2)
-        print(view1.shape, view2.shape)
+        # print(view1.shape, view2.shape)
+        view1 = view1[-1,:,:]
+        view2 = view2[-1,:,:]
+        
+        # print(view1)
+        # print(view2)
+        
         loss_deepCCA = model_deepCCA.loss(view1, view2)
-        loss_deepCCA.backward()
-        model_deepCCA.step()
+        loss_deepCCA.backward(retain_graph=True)
+        optimizer_deepCCA.step()
 
         # -----------------
         #  Train Generator
@@ -157,7 +171,7 @@ for epoch in range(opt.n_epochs):
 
         # Loss measures generator's ability to fool the discriminator
         g_loss = adversarial_loss(discriminator(gen_imgs), valid)
-        (g_loss + loss_deepCCA).backward(retain_graph=True)
+        (g_loss).backward(retain_graph=True)
         optimizer_G.step()
 
         # ---------------------

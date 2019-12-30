@@ -24,7 +24,7 @@ SEED = 1
 BATCH_SIZE = 128
 LOG_INTERVAL = 10
 EPOCHS = 10
-no_of_sample = 10
+no_of_sample = 1
 ZDIMS = 20
 
 class Generator(nn.Module):
